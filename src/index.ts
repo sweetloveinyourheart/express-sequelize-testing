@@ -2,6 +2,7 @@ import express from 'express'
 import sequelize from './database/connection'
 import router from './routers'
 import { migrateDatabase } from './database/migrations'
+import bodyParser from 'body-parser'
 
 const app = express()
 
@@ -15,6 +16,8 @@ sequelize
     .catch(() => {
         console.log(`[ERROR] Connect to database failed !`)
     })
+
+app.use(bodyParser.json())
 
 app.use("/api/v1", router)
 

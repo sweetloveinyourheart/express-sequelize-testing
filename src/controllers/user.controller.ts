@@ -4,6 +4,7 @@ import { validationResult } from "express-validator";
 import { UserDto } from "../dtos/user.dto";
 import { User } from "../models/user.model";
 import { BadRequestException } from "../common/exceptions/badRequestException";
+import { InternalServerErrorException } from "../common/exceptions/internalServerError";
 
 export async function newUser(request: Request, response: Response) {
     try {
@@ -36,7 +37,7 @@ export async function newUser(request: Request, response: Response) {
         return response.status(201).json({ message: 'New user created !' })
 
     } catch (error: any) {
-        const exception = new BadRequestException(error.message)
+        const exception = new InternalServerErrorException(error.message)
         return response.status(exception.status).json(exception)
     }
 }

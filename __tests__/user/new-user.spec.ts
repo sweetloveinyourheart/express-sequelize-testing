@@ -78,7 +78,13 @@ describe("newUser", () => {
         });
     });
 
-    it.skip("should create a new user and return 201", async () => {
+    it("should create a new user and return 201", async () => {
+        const mockErrors = {
+            array: () => [],
+            isEmpty: () => true
+        };
+        mockValidationResult.mockReturnValue(mockErrors as any);
+
         User.findOne = jest.fn().mockResolvedValue(null);
         mockGenSalt.mockResolvedValue("test-salt" as never);
         mockHash.mockResolvedValue("hashed-password" as never);
@@ -97,14 +103,22 @@ describe("newUser", () => {
         expect(mockUserSave).toHaveBeenCalled();
     });
 
-    it.skip("should return 400 and 'Create user failed !' if any error occurs", async () => {
-        User.findOne = jest.fn().mockRejectedValue(new Error("Some error"));
+    it("should return 500 and message if any error occurs", async () => {
+        const mockErrors = {
+            array: () => [],
+            isEmpty: () => true
+        };
+        mockValidationResult.mockReturnValue(mockErrors as any);
+
+        User.findOne = jest.fn().mockRejectedValue(new Error("Query failed"));
 
         await newUser(mockRequest, response);
 
-        expect(response.status).toHaveBeenCalledWith(400);
+        expect(response.status).toHaveBeenCalledWith(500);
         expect(response.json).toHaveBeenCalledWith({
-            message: "Create user failed !",
+            message: "Query failed",
+            status: 500,
+            error: "Internal Server Error"
         });
     });
 });
