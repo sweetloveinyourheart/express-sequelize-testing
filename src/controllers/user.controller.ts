@@ -1,4 +1,4 @@
-import { genSalt, hash } from "bcrypt";
+import { genSalt, hash, compare } from "bcrypt";
 import { NextFunction, Request, Response } from "express";
 import { validationResult } from "express-validator";
 import { UserDto } from "../dtos/user.dto";
@@ -59,6 +59,13 @@ export async function login(request: Request, response: Response) {
         // check username exist
         const user = await User.findOne({ where: { username: body.username } })
         if (!user) {
+            const exception = new UnAuthorizedException('Username or password is wrong !')
+            return response.status(exception.status).json(exception)
+        }
+
+        // check password is valid or not
+        const isPasswordValid = await compare(body.password, user.password)
+        if (!isPasswordValid) {
             const exception = new UnAuthorizedException('Username or password is wrong !')
             return response.status(exception.status).json(exception)
         }

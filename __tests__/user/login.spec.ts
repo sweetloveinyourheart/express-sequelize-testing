@@ -3,10 +3,12 @@ import { login } from "../../src/controllers/user.controller";
 import { validationResult } from "express-validator";
 import { User } from "../../src/models/user.model";
 import jwt from 'jsonwebtoken'
+import { compare } from "bcrypt";
 
 jest.mock("express-validator"); // Mock the express-validator module
 jest.mock("jsonwebtoken"); // Mock the jsonwebtoken module
 jest.mock("../../src/models/user.model"); // Mock the User model
+jest.mock("bcrypt"); // Mock the bcrypt module
 
 // Mock the response object
 const response: any = {
@@ -18,10 +20,12 @@ describe('login', () => {
     const mockValidationResult = validationResult as jest.MockedFunction<
         typeof validationResult
     >;
+
     const mockJwtSign = jwt.sign as jest.MockedFunction<typeof jwt.sign>;
     const mockRequest = {
         body: { username: "testuser", password: "123456" },
     } as Request;
+    const mockCompare = compare as jest.MockedFunction<typeof compare>
 
     beforeEach(() => {
         jest.clearAllMocks()
@@ -70,6 +74,31 @@ describe('login', () => {
         });
     });
 
+    it("should return 401 and 'Username or password is wrong !' if password not match", async () => {
+        const mockErrors = {
+            array: () => [],
+            isEmpty: () => true
+        };
+        mockValidationResult.mockReturnValue(mockErrors as any);
+
+        const mockUser = {
+            id: 1,
+            username: "mockuser",
+            password: "mockpassword"
+        }
+
+        User.findOne = jest.fn().mockResolvedValue(mockUser);
+
+        await login(mockRequest, response);
+
+        expect(response.status).toHaveBeenCalledWith(401);
+        expect(response.json).toHaveBeenCalledWith({
+            message: "Username or password is wrong !",
+            status: 401,
+            error: "Unauthorized"
+        });
+    });
+
     it("should return access and refresh tokens if user exists", async () => {
         const mockErrors = {
             array: () => [],
@@ -83,6 +112,7 @@ describe('login', () => {
         }
 
         User.findOne = jest.fn().mockResolvedValue(mockUser);
+        mockCompare.mockReturnValue(true as any)
         mockJwtSign.mockImplementation((payload: any, secret: string | null, options: any) => {
             return `mocked-token-${options.expiresIn}`;
         });
