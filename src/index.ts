@@ -3,8 +3,11 @@ import sequelize from './database/connection'
 import router from './routers'
 import { migrateDatabase } from './database/migrations'
 import bodyParser from 'body-parser'
+import dotenv from 'dotenv'
 
 const app = express()
+
+dotenv.config()
 
 sequelize
     .authenticate()
