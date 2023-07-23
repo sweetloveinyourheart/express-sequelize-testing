@@ -50,3 +50,9 @@ Order.init({
     sequelize, // We need to pass the connection instance
     modelName: 'Order' // We need to choose the model name
 });
+
+// Order.belongsTo(User, {
+//     foreignKey: 'user_id',
+//     targetKey: 'id',
+//     as: 'user'
+// })

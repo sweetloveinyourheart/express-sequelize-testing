@@ -57,9 +57,3 @@ User.hasMany(Order, {
     foreignKey: 'user_id',
     as: 'orders'
 })
-
-Order.belongsTo(User, {
-    foreignKey: 'user_id',
-    targetKey: 'id',
-    as: 'user'
-})

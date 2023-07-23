@@ -1,5 +1,7 @@
-import { genSalt, hash, compare } from "bcrypt";
-import { NextFunction, Request, Response } from "express";
+import * as bcrypt from "bcrypt";
+import jwt from 'jsonwebtoken'
+
+import { Request, Response } from "express";
 import { validationResult } from "express-validator";
 import { UserDto } from "../dtos/user.dto";
 import { User } from "../models/user.model";
@@ -7,7 +9,6 @@ import { BadRequestException } from "../common/exceptions/badRequestException";
 import { InternalServerErrorException } from "../common/exceptions/internalServerError";
 import { UnAuthorizedException } from "../common/exceptions/unAuthorizedException";
 import { NotFoundException } from "../common/exceptions/notFoundException";
-import jwt from 'jsonwebtoken'
 
 export async function newUser(request: Request, response: Response) {
     try {
@@ -28,8 +29,8 @@ export async function newUser(request: Request, response: Response) {
         }
 
         // hash password
-        const salt = await genSalt(10)
-        const hashedPass = await hash(body.username, salt)
+        const salt = await bcrypt.genSalt()
+        const hashedPass = await bcrypt.hash(body.password, salt)
 
         const newUser = await User.create({
             password: hashedPass,
@@ -64,7 +65,7 @@ export async function login(request: Request, response: Response) {
         }
 
         // check password is valid or not
-        const isPasswordValid = await compare(body.password, user.password)
+        const isPasswordValid = await bcrypt.compare(body.password, user.password)                
         if (!isPasswordValid) {
             const exception = new UnAuthorizedException('Username or password is wrong !')
             return response.status(exception.status).json(exception)

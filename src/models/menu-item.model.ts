@@ -1,9 +1,9 @@
-import { DataTypes, ForeignKey, InferAttributes, InferCreationAttributes, Model, NonAttribute } from 'sequelize';
+import { CreationOptional, DataTypes, ForeignKey, InferAttributes, InferCreationAttributes, Model, NonAttribute } from 'sequelize';
 import sequelize from '../database/connection';
 import { Restaurant } from './restaurant.model';
 
 export class MenuItem extends Model<InferAttributes<MenuItem>, InferCreationAttributes<MenuItem>> {
-    declare id: number
+    declare id: CreationOptional<number>
     declare restaurant_id: ForeignKey<Restaurant['id']>
     declare name: string
     declare description: string
@@ -35,3 +35,9 @@ MenuItem.init({
     sequelize, // We need to pass the connection instance
     modelName: 'MenuItem' // We need to choose the model name
 });
+
+// MenuItem.belongsTo(Restaurant, {
+//     targetKey: 'id',
+//     foreignKey: 'restaurant_id',
+//     as: 'restaurant'
+// })

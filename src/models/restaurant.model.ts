@@ -1,16 +1,17 @@
-import { DataTypes, InferAttributes, InferCreationAttributes, Model, NonAttribute } from 'sequelize';
+import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model, NonAttribute } from 'sequelize';
 import sequelize from '../database/connection';
 import { MenuItem } from './menu-item.model';
 import { Order } from './order.model';
 
-enum CuisineType {
+export enum CuisineType {
     VietnamFood = "Vietnam Food",
+    ItalianFood = 'Italian Food',
     SeaFood = "Sea Food",
     BBQ = "BBQ"
 }
 
 export class Restaurant extends Model<InferAttributes<Restaurant>, InferCreationAttributes<Restaurant>> {
-    declare id: number
+    declare id: CreationOptional<number>
     declare name: string
     declare cuisine_type: CuisineType
     declare address: string

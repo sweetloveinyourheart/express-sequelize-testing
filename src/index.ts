@@ -5,7 +5,7 @@ import { migrateDatabase } from './database/migrations'
 import bodyParser from 'body-parser'
 import dotenv from 'dotenv'
 
-const app = express()
+export const app = express()
 
 dotenv.config()
 
